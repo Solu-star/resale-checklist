@@ -15,6 +15,28 @@
       --muted: #6b7280;
       --line: #dde3ea;
       --accent: #0f766e;
+      --header-bg: rgba(245, 246, 247, .96);
+      --field-bg: #fff;
+      --memo-bg: #fbfcfd;
+      --profit-bg: #f1fbf8;
+      --profit-line: #cfe8e3;
+      --item-line: #edf1f4;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111827;
+        --card: #1f2937;
+        --ink: #f3f4f6;
+        --muted: #9ca3af;
+        --line: #374151;
+        --accent: #14b8a6;
+        --header-bg: rgba(17, 24, 39, .96);
+        --field-bg: #111827;
+        --memo-bg: #111827;
+        --profit-bg: #0f2e2a;
+        --profit-line: #1f4d46;
+        --item-line: #2b3544;
+      }
     }
     * { box-sizing: border-box; }
     body {
@@ -28,42 +50,71 @@
       position: sticky;
       top: 0;
       z-index: 2;
-      background: rgba(245, 246, 247, .96);
+      background: var(--header-bg);
       border-bottom: 1px solid var(--line);
-      padding: 12px;
+      padding: 10px 12px 8px;
     }
     h1 {
-      margin: 0 0 8px;
-      font-size: 20px;
+      margin: 0 0 6px;
+      font-size: 16px;
       letter-spacing: 0;
     }
-    input {
+    input[type="search"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 11px 12px;
+      padding: 10px 12px;
       font-size: 16px;
-      background: #fff;
+      background: var(--field-bg);
+      color: var(--ink);
     }
     .toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .updated {
       color: var(--muted);
       font-size: 12px;
+    }
+    .toolbar-buttons {
+      display: flex;
+      gap: 6px;
     }
     button {
       border: 1px solid var(--accent);
       border-radius: 8px;
       background: var(--accent);
       color: #fff;
-      padding: 8px 10px;
-      font-size: 14px;
+      padding: 7px 10px;
+      font-size: 13px;
       font-weight: 800;
+    }
+    button.ghost {
+      background: transparent;
+      color: var(--accent);
+    }
+    .chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-top: 8px;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--ink);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
     }
     main {
       max-width: 760px;
@@ -80,19 +131,35 @@
     summary {
       cursor: pointer;
       list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       padding: 13px 14px;
       font-weight: 800;
       font-size: 17px;
     }
     summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "▸";
+      color: var(--muted);
+      font-size: 14px;
+    }
+    details[open] summary::after { content: "▾"; }
+    .count {
+      margin-left: auto;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .count.has { color: var(--accent); }
     .items {
       border-top: 1px solid var(--line);
       padding: 8px 12px 12px;
     }
     .corner-profit {
-      border: 1px solid #cfe8e3;
+      border: 1px solid var(--profit-line);
       border-radius: 8px;
-      background: #f1fbf8;
+      background: var(--profit-bg);
       padding: 10px;
       margin: 2px 0 8px;
     }
@@ -103,7 +170,7 @@
       margin: 0 0 6px;
     }
     .corner-profit-body {
-      background: #fff;
+      background: var(--card);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 9px 10px;
@@ -115,9 +182,11 @@
       grid-template-columns: 24px 1fr;
       gap: 8px;
       padding: 9px 0;
-      border-bottom: 1px solid #edf1f4;
+      border-bottom: 1px solid var(--item-line);
     }
-    label:last-child { border-bottom: 0; }
+    label:last-of-type { border-bottom: 0; }
+    label.done { opacity: .5; }
+    label.done .brand { text-decoration: line-through; }
     input[type="checkbox"] {
       width: 20px;
       height: 20px;
@@ -125,10 +194,12 @@
       accent-color: var(--accent);
     }
     .brand {
+      display: block;
       font-weight: 800;
       font-size: 16px;
     }
     .note {
+      display: block;
       color: var(--muted);
       font-size: 13px;
       margin-top: 2px;
@@ -140,24 +211,36 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 9px 10px;
+      margin-top: 8px;
       font: inherit;
       font-size: 14px;
-      background: #fbfcfd;
+      background: var(--memo-bg);
+      color: var(--ink);
     }
     textarea::placeholder {
       color: #9aa3ad;
     }
-    .hidden { display: none; }
+    .no-hit {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 24px 0;
+    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <header>
+  <header id="header">
     <h1>中古せどり シンプル仕入れリスト</h1>
     <input id="search" type="search" placeholder="例: ゴルフ キャロウェイ ナイキ SONY">
     <div class="toolbar">
       <span id="updated" class="updated"></span>
-      <button id="refresh" type="button">更新</button>
+      <div class="toolbar-buttons">
+        <button id="reset" type="button" class="ghost">チェック全消し</button>
+        <button id="refresh" type="button">更新</button>
+      </div>
     </div>
+    <nav id="chips" class="chips" aria-label="コーナーへ移動"></nav>
   </header>
 
   <main>
@@ -376,14 +459,20 @@
         </div>
       </details>
     </section>
+
+    <p id="no-hit" class="no-hit hidden">該当するブランドが見つかりません</p>
   </main>
 
   <script>
     const search = document.querySelector("#search");
     const refresh = document.querySelector("#refresh");
+    const resetBtn = document.querySelector("#reset");
     const updated = document.querySelector("#updated");
+    const headerEl = document.querySelector("#header");
+    const chipsEl = document.querySelector("#chips");
+    const noHit = document.querySelector("#no-hit");
     const sections = [...document.querySelectorAll("section")];
-    const dataUpdatedAt = "2026-06-10 19:10";
+    const dataUpdatedAt = "2026-06-10 19:30";
     const defaultCornerPoints = {
       "ゴルフクラブ": "利益ポイント: ドライバー、フェアウェイウッド、パター、アイアンセット。純正カバー付き、人気シャフト、上位モデルを見る。",
       "スニーカー・靴": "利益ポイント: 限定色、コラボ、USA/UK製、人気サイズ。加水分解、強い臭い、ソール剥がれは避ける。",
@@ -405,10 +494,43 @@
       "時計": "利益ポイント: G-SHOCK限定、ソーラー電波、ダイバーズ、機械式。箱・余りコマ付きは確認。"
     };
 
+    // ----- 端末内保存(localStorage) -----
+    const KEY_CHECKS = "resale-checks-v1";
+    const KEY_MEMOS = "resale-memos-v1";
+    const KEY_OPEN = "resale-open-v1";
+    const loadStore = (key) => {
+      try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+    };
+    const saveStore = (key, value) => {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    };
+    let checks = loadStore(KEY_CHECKS);
+    let memos = loadStore(KEY_MEMOS);
+    let openState = loadStore(KEY_OPEN);
+
+    // 検索用の正規化: 全角英数→半角、カタカナ→ひらがな、小文字化
+    const normalize = (text) => text
+      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+      .toLowerCase()
+      .replace(/[ァ-ヶ]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0x60));
+
+    const updateBadge = (section) => {
+      const boxes = [...section.querySelectorAll('input[type="checkbox"]')];
+      const done = boxes.filter((b) => b.checked).length;
+      const badge = section.querySelector(".count");
+      badge.textContent = `${done}/${boxes.length}`;
+      badge.classList.toggle("has", done > 0);
+    };
+
     sections.forEach((section) => {
-      const title = section.querySelector("summary")?.textContent.trim();
+      const details = section.querySelector("details");
+      const summaryEl = section.querySelector("summary");
       const items = section.querySelector(".items");
-      if (!title || !items) return;
+      if (!details || !summaryEl || !items) return;
+      const title = summaryEl.textContent.trim();
+      section.dataset.title = title;
+
+      // コーナー利益ポイント
       const box = document.createElement("div");
       box.className = "corner-profit";
       box.innerHTML = `
@@ -416,6 +538,57 @@
         <div class="corner-profit-body">${defaultCornerPoints[title] || ""}</div>
       `;
       items.prepend(box);
+
+      // チェック済み件数バッジ
+      const badge = document.createElement("span");
+      badge.className = "count";
+      summaryEl.appendChild(badge);
+
+      // チェック状態の復元と保存
+      section.querySelectorAll("label").forEach((label) => {
+        const brand = label.querySelector(".brand")?.textContent.trim() || "";
+        const id = `${title}|${brand}`;
+        const cb = label.querySelector('input[type="checkbox"]');
+        cb.checked = !!checks[id];
+        label.classList.toggle("done", cb.checked);
+        cb.addEventListener("change", () => {
+          if (cb.checked) checks[id] = true; else delete checks[id];
+          saveStore(KEY_CHECKS, checks);
+          label.classList.toggle("done", cb.checked);
+          updateBadge(section);
+        });
+      });
+      updateBadge(section);
+
+      // コーナーごとのメモ(端末内に自動保存)
+      const memo = document.createElement("textarea");
+      memo.placeholder = "メモ(この端末だけに保存されます)";
+      memo.value = memos[title] || "";
+      memo.addEventListener("input", () => {
+        memos[title] = memo.value;
+        saveStore(KEY_MEMOS, memos);
+      });
+      items.appendChild(memo);
+
+      // 開閉状態の記憶
+      if (title in openState) details.open = !!openState[title];
+      details.addEventListener("toggle", () => {
+        if (searchActive) return;
+        openState[title] = details.open;
+        saveStore(KEY_OPEN, openState);
+      });
+
+      // コーナーへジャンプするボタン
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = title;
+      chip.addEventListener("click", () => {
+        details.open = true;
+        const top = section.getBoundingClientRect().top + window.scrollY - headerEl.offsetHeight - 8;
+        window.scrollTo({ top, behavior: "smooth" });
+      });
+      chipsEl.appendChild(chip);
     });
 
     updated.textContent = `更新: ${dataUpdatedAt}`;
@@ -425,11 +598,54 @@
       location.href = url.toString();
     });
 
+    resetBtn.addEventListener("click", () => {
+      if (!confirm("すべてのチェックを外しますか?")) return;
+      checks = {};
+      saveStore(KEY_CHECKS, checks);
+      document.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+      document.querySelectorAll("label.done").forEach((l) => l.classList.remove("done"));
+      sections.forEach(updateBadge);
+    });
+
+    // ブランド単位の絞り込み検索
+    let searchActive = false;
+    let openBefore = null;
     search.addEventListener("input", () => {
-      const q = search.value.trim().toLowerCase();
-      sections.forEach((section) => {
-        section.classList.toggle("hidden", q && !section.innerText.toLowerCase().includes(q));
+      const q = normalize(search.value.trim());
+
+      if (q && !searchActive) {
+        openBefore = new Map(sections.map((s) => [s, s.querySelector("details").open]));
+        searchActive = true;
+      }
+      if (!q) {
+        if (searchActive) {
+          sections.forEach((s) => {
+            s.classList.remove("hidden");
+            s.querySelectorAll("label").forEach((l) => l.classList.remove("hidden"));
+            s.querySelector("details").open = openBefore.get(s);
+          });
+          noHit.classList.add("hidden");
+          searchActive = false;
+          openBefore = null;
+        }
+        return;
+      }
+
+      let totalHits = 0;
+      sections.forEach((s) => {
+        const details = s.querySelector("details");
+        const titleMatch = normalize(s.dataset.title).includes(q);
+        let hits = 0;
+        s.querySelectorAll("label").forEach((l) => {
+          const match = titleMatch || normalize(l.textContent).includes(q);
+          l.classList.toggle("hidden", !match);
+          if (match) hits++;
+        });
+        s.classList.toggle("hidden", hits === 0);
+        if (hits > 0) details.open = true;
+        totalHits += hits;
       });
+      noHit.classList.toggle("hidden", totalHits > 0);
     });
   </script>
 </body>
