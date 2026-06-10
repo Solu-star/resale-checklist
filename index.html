@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f766e">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="pragma" content="no-cache">
+  <title>中古せどり シンプル仕入れリスト</title>
+  <style>
+    :root {
+      --bg: #f5f6f7;
+      --card: #fff;
+      --ink: #1f2933;
+      --muted: #6b7280;
+      --line: #dde3ea;
+      --accent: #0f766e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(245, 246, 247, .96);
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 16px;
+      background: #fff;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .updated {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 13px 14px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    .items {
+      border-top: 1px solid var(--line);
+      padding: 8px 12px 12px;
+    }
+    .corner-profit {
+      border: 1px solid #cfe8e3;
+      border-radius: 8px;
+      background: #f1fbf8;
+      padding: 10px;
+      margin: 2px 0 8px;
+    }
+    .corner-profit-title {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      margin: 0 0 6px;
+    }
+    .corner-profit-body {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    label {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid #edf1f4;
+    }
+    label:last-child { border-bottom: 0; }
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin: 2px 0 0;
+      accent-color: var(--accent);
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 54px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font: inherit;
+      font-size: 14px;
+      background: #fbfcfd;
+    }
+    textarea::placeholder {
+      color: #9aa3ad;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>中古せどり シンプル仕入れリスト</h1>
+    <input id="search" type="search" placeholder="例: ゴルフ キャロウェイ ナイキ SONY">
+    <div class="toolbar">
+      <span id="updated" class="updated"></span>
+      <button id="refresh" type="button">更新</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <details open>
+        <summary>ゴルフクラブ</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">キャロウェイ(Callaway)</span><span class="note">EPIC / MAVRIK / ROGUE / PARADYM。ドライバー・フェアウェイウッド優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">テーラーメイド(TaylorMade)</span><span class="note">SIM / Stealth / Mシリーズ。ヘッド割れ・シャフト傷を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ピン(PING)</span><span class="note">Gシリーズ。ドライバー、アイアンセット、パターを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">スコッティキャメロン(Scotty Cameron)</span><span class="note">パター最優先。カバー付きなら相場確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details open>
+        <summary>スニーカー・靴</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ナイキ(NIKE)</span><span class="note">Jordan / Dunk / Air Max / ACG。型番タグを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ニューバランス(New Balance)</span><span class="note">990 / 991 / 992 / 993 / 2002R。USA/UK製は優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">レッドウィング(Red Wing)</span><span class="note">ブーツ。ソール減り・ひび割れ・カビを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ドクターマーチン(Dr.Martens)</span><span class="note">8ホール、3ホール。サイズと状態次第。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details open>
+        <summary>バッグ・財布</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ポーター(PORTER)</span><span class="note">タンカー、ヒート、リュック、ショルダーを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ブリーフィング(BRIEFING)</span><span class="note">ビジネスバッグ、リュック。黒・ネイビー優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">トゥミ(TUMI)</span><span class="note">ビジネスバッグ。持ち手劣化、ファスナーを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">コーチ(COACH)</span><span class="note">安ければ確認。角スレ、内側汚れに注意。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>オーディオ・ヘッドホン</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ソニー(SONY)</span><span class="note">WH-1000XM系、Walkman、スピーカー、レコーダー。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ボーズ(BOSE)</span><span class="note">ヘッドホン、スピーカー。バッテリー劣化に注意。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">デノン(DENON)</span><span class="note">アンプ、CDプレーヤー。リモコン有無を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">テクニクス(Technics)</span><span class="note">ターンテーブル、オーディオ機器。状態次第で高単価。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>カメラ・レンズ</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">キヤノン(Canon)</span><span class="note">EOS、EFレンズ。カビ・くもりを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ニコン(Nikon)</span><span class="note">Dシリーズ、Fマウントレンズ。AF動作を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ソニー(SONY)</span><span class="note">αシリーズ、Eマウントレンズ。付属品あり優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">富士フイルム(FUJIFILM)</span><span class="note">Xシリーズ。単焦点レンズは必ず相場確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>ゲーム</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ニンテンドー(Nintendo)</span><span class="note">Switch、3DS、DS、ゲームボーイ。箱付き優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ソニー(SONY)</span><span class="note">PS5 / PS4 / Vita / PSP。動作・付属品を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">セガ(SEGA)</span><span class="note">サターン、ドリームキャスト、周辺機器。箱説付きを確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">マイクロソフト(Microsoft)</span><span class="note">Xbox本体、純正コントローラー。動作と付属品を見る。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>ホビー・フィギュア</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">バンダイ(BANDAI)</span><span class="note">S.H.Figuarts、METAL BUILD、ガンプラ限定品。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">グッドスマイルカンパニー(Good Smile Company)</span><span class="note">ねんどろいど、figma。未開封・限定を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">レゴ(LEGO)</span><span class="note">廃盤、スターウォーズ、テクニック。欠品注意。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">カトー(KATO)</span><span class="note">鉄道模型。箱付き、動作未確認でも相場確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>楽器・エフェクター</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ボス(BOSS)</span><span class="note">エフェクター全般。古い型番、箱付き優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ローランド(Roland)</span><span class="note">シンセ、リズムマシン、音源。通電確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ヤマハ(YAMAHA)</span><span class="note">シンセ、ミキサー、ギター、管楽器。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">フェンダー(Fender)</span><span class="note">ギター、ベース。ネック反り、フレット、電装を見る。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>化粧品・美容</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">オージュア(Aujua)</span><span class="note">シャンプー、トリートメント。未使用・残量多めを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ケラスターゼ(Kerastase)</span><span class="note">ヘアケア系。業務用、大容量、セット品を確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">エスケーツー(SK-II)</span><span class="note">美容液、化粧水、クリーム。未開封・製造時期を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">オバジ(Obagi)</span><span class="note">美容液、ビタミンC系。箱付き、未開封を優先。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>生活家電</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ダイソン(Dyson)</span><span class="note">掃除機、ドライヤー。バッテリーと付属品を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">パナソニック(Panasonic)</span><span class="note">美容家電、炊飯器、食洗機、空気清浄機。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">バルミューダ(BALMUDA)</span><span class="note">トースター、レンジ、ライト。年式を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">デロンギ(DeLonghi)</span><span class="note">コーヒーメーカー、ヒーター。水垢・動作注意。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>家具</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">カリモク(Karimoku)</span><span class="note">カリモク60、チェア、ソファ、テーブル。型番タグと傷を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">飛騨産業(HIDA)</span><span class="note">キツツキ、ダイニングチェア、テーブル。ぐらつき・割れを確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ハーマンミラー(Herman Miller)</span><span class="note">アーロンチェア、セイルチェア。昇降・リクライニング・メッシュ破れを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">カッシーナ(Cassina)</span><span class="note">チェア、ソファ、テーブル。正規タグ、状態、搬出サイズを確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>アウトドア</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">スノーピーク(Snow Peak)</span><span class="note">テーブル、チェア、焚火台、ランタン。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">コールマン(Coleman)</span><span class="note">ランタン、バーナー、限定カラー。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ヘリノックス(Helinox)</span><span class="note">チェア系。破れ・ポール欠品を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">モンベル(mont-bell)</span><span class="note">ウェア、寝袋、ザック。状態良ければ確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>釣具</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">シマノ(SHIMANO)</span><span class="note">リール、ロッド。型番と巻き感を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ダイワ(DAIWA)</span><span class="note">リール、ロッド。傷より動作を重視。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">アブガルシア(Abu Garcia)</span><span class="note">ベイトリール、ロッド。箱付き優先。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">メガバス(Megabass)</span><span class="note">ルアー、ロッド。廃盤・限定カラーを見る。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>バドミントンラケット</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ヨネックス(YONEX)</span><span class="note">アストロクス / ナノフレア / アークセイバー。ひび割れと塗装剥げを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">リーニン(LI-NING)</span><span class="note">AERONAUT / AXFORCE / TECTONIC。上位モデルなら相場確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ビクター(VICTOR)</span><span class="note">スラスター / ブレイブソード / ジェットスピード。グリップ状態を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ミズノ(Mizuno)</span><span class="note">FORTIUS系。軽量・上位モデル、ケース付きなら確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>工具</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">マキタ(Makita)</span><span class="note">18V/40V工具、バッテリー、充電器。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ハイコーキ(HiKOKI)</span><span class="note">インパクト、丸ノコ、バッテリー系。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">スナップオン(Snap-on)</span><span class="note">工具箱、レンチ、ラチェット。刻印確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ミツトヨ(Mitutoyo)</span><span class="note">測定器。精度・電池・ケースを見る。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>キッチン・食器</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">ル・クルーゼ(Le Creuset)</span><span class="note">鍋、食器。欠け・焦げ・箱を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ストウブ(Staub)</span><span class="note">鍋。サイズ、状態、付属品を確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">バカラ(Baccarat)</span><span class="note">グラス。箱付き、欠けなしなら確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ウェッジウッド(Wedgwood)</span><span class="note">カップ、皿セット。シリーズ名を見る。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>古着</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">パタゴニア(Patagonia)</span><span class="note">フリース、シェル、ダウン。タグ型番を見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ノースフェイス(THE NORTH FACE)</span><span class="note">ダウン、マウンパ、フリース。偽物注意。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">バブアー(Barbour)</span><span class="note">オイルドジャケット。臭い・破れを見る。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">リーバイス(Levi's)</span><span class="note">501、ビッグE、USA製、LVC。タグ確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>時計</summary>
+        <div class="items">
+          <label><input type="checkbox"><span><span class="brand">カシオ(CASIO)</span><span class="note">G-SHOCK、限定、ソーラー電波。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">セイコー(SEIKO)</span><span class="note">ダイバーズ、機械式、プロスペックス。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">シチズン(CITIZEN)</span><span class="note">アテッサ、プロマスター。動作確認。</span></span></label>
+          <label><input type="checkbox"><span><span class="brand">ハミルトン(Hamilton)</span><span class="note">機械式。箱・保証書付きなら確認。</span></span></label>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const search = document.querySelector("#search");
+    const refresh = document.querySelector("#refresh");
+    const updated = document.querySelector("#updated");
+    const sections = [...document.querySelectorAll("section")];
+    const dataUpdatedAt = "2026-06-10 19:10";
+    const defaultCornerPoints = {
+      "ゴルフクラブ": "利益ポイント: ドライバー、フェアウェイウッド、パター、アイアンセット。純正カバー付き、人気シャフト、上位モデルを見る。",
+      "スニーカー・靴": "利益ポイント: 限定色、コラボ、USA/UK製、人気サイズ。加水分解、強い臭い、ソール剥がれは避ける。",
+      "バッグ・財布": "利益ポイント: リュック、ショルダー、ビジネスバッグ。黒・ネイビー、型番タグ、付属品ありが狙い目。",
+      "オーディオ・ヘッドホン": "利益ポイント: ノイズキャンセリング、アンプ、CDプレーヤー、ターンテーブル。リモコン付きは強い。",
+      "カメラ・レンズ": "利益ポイント: ミラーレス、単焦点、望遠レンズ、アクションカメラ。カビ・くもり・AF不良は注意。",
+      "ゲーム": "利益ポイント: 本体、純正コントローラー、箱説付きレトロ、限定版。スティック不良と読込不良を見る。",
+      "ホビー・フィギュア": "利益ポイント: 未開封、限定、廃盤、鉄道模型セット。箱の日焼け、欠品、偽物に注意。",
+      "楽器・エフェクター": "利益ポイント: エフェクター、シンセ、MTR、小型音響機器、民族楽器。音出し、ガリ、電池液漏れを見る。",
+      "化粧品・美容": "利益ポイント: 機能性シャンプー、美容液、ジェル、クリーム、サロン専売品。未開封・残量多め・セット品を見る。",
+      "生活家電": "利益ポイント: 炊飯器は優先度低め。ミキサー、コーヒーメーカー、精米機、美容家電、掃除機を狙う。",
+      "家具": "利益ポイント: たのメル便を使用しても、なお利益が出る商品しか仕入れない。高単価チェア、ブランド家具、状態良好、搬出しやすいサイズを優先。",
+      "アウトドア": "利益ポイント: ランタン、バーナー、チェア、寝袋、小型ギア。テントはベタつき・欠品・送料に注意。",
+      "釣具": "利益ポイント: リール、ロッド、ルアー、限定カラー。巻き感、折れ、ガイド割れを見る。",
+      "バドミントンラケット": "利益ポイント: 上位モデル、軽量モデル、ケース付き、状態良好品。フレームひび割れは避ける。",
+      "工具": "利益ポイント: 18V/40Vバッテリー工具、充電器、測定器、工具箱。バッテリー劣化と軸ブレを見る。",
+      "キッチン・食器": "利益ポイント: 高級鍋、ブランド食器、未使用ギフト、箱付きセット。欠け・ヒビ・水垢を見る。",
+      "古着": "利益ポイント: ダウン、フリース、シェル、デニム、スウェット。型番タグ、サイズ、季節需要を見る。",
+      "時計": "利益ポイント: G-SHOCK限定、ソーラー電波、ダイバーズ、機械式。箱・余りコマ付きは確認。"
+    };
+
+    sections.forEach((section) => {
+      const title = section.querySelector("summary")?.textContent.trim();
+      const items = section.querySelector(".items");
+      if (!title || !items) return;
+      const box = document.createElement("div");
+      box.className = "corner-profit";
+      box.innerHTML = `
+        <p class="corner-profit-title">コーナー利益ポイント</p>
+        <div class="corner-profit-body">${defaultCornerPoints[title] || ""}</div>
+      `;
+      items.prepend(box);
+    });
+
+    updated.textContent = `更新: ${dataUpdatedAt}`;
+    refresh.addEventListener("click", () => {
+      const url = new URL(location.href);
+      url.searchParams.set("v", Date.now().toString());
+      location.href = url.toString();
+    });
+
+    search.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      sections.forEach((section) => {
+        section.classList.toggle("hidden", q && !section.innerText.toLowerCase().includes(q));
+      });
+    });
+  </script>
+</body>
+</html>
