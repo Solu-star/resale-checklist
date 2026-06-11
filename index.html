@@ -59,7 +59,9 @@
       font-size: 16px;
       letter-spacing: 0;
     }
-    input[type="search"] {
+    input[type="search"],
+    input[type="date"],
+    input[type="text"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -226,6 +228,81 @@
       font-size: 14px;
       padding: 24px 0;
     }
+    .visit-panel {
+      padding: 12px;
+    }
+    .visit-form {
+      display: grid;
+      gap: 10px;
+    }
+    .visit-field {
+      display: grid;
+      gap: 5px;
+      padding: 0;
+      border: 0;
+    }
+    .visit-field span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .date-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+    .visit-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .visit-actions button {
+      flex: 1;
+    }
+    .visit-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .visit-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--memo-bg);
+    }
+    .visit-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .visit-card-title {
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .visit-card-date {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 1px;
+    }
+    .visit-card button {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+    .visit-lines {
+      display: grid;
+      gap: 3px;
+      color: var(--ink);
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .empty-visits {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 10px 0 2px;
+    }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -244,6 +321,44 @@
   </header>
 
   <main>
+    <section>
+      <details open>
+        <summary>巡回履歴</summary>
+        <div class="visit-panel">
+          <form id="visit-form" class="visit-form">
+            <label class="visit-field">
+              <span>日付</span>
+              <div class="date-row">
+                <input id="visit-date" type="date">
+                <button id="yesterday" type="button" class="ghost">昨日</button>
+              </div>
+            </label>
+            <label class="visit-field">
+              <span>店舗</span>
+              <input id="visit-store" type="text" placeholder="例: セカンドストリート 名古屋店">
+            </label>
+            <label class="visit-field">
+              <span>重点的に見たコーナー</span>
+              <textarea id="visit-corners" placeholder="例: 電子辞書、ベビー用品、生活家電、文房具"></textarea>
+            </label>
+            <label class="visit-field">
+              <span>重点メーカー・ブランド</span>
+              <textarea id="visit-makers" placeholder="例: CASIO EX-word、Ergobaby、Panasonic、DIC"></textarea>
+            </label>
+            <label class="visit-field">
+              <span>メモ</span>
+              <textarea id="visit-note" placeholder="値札感、棚の位置、次回見る場所、仕入れ候補など"></textarea>
+            </label>
+            <div class="visit-actions">
+              <button type="submit">巡回を保存</button>
+              <button id="clear-visit-form" type="button" class="ghost">入力クリア</button>
+            </div>
+          </form>
+          <div id="visit-list" class="visit-list"></div>
+        </div>
+      </details>
+    </section>
+
     <section>
       <details open>
         <summary>ゴルフクラブ</summary>
@@ -519,8 +634,17 @@
     const headerEl = document.querySelector("#header");
     const chipsEl = document.querySelector("#chips");
     const noHit = document.querySelector("#no-hit");
-    const sections = [...document.querySelectorAll("section")];
-    const dataUpdatedAt = "2026-06-10 19:35";
+    const visitForm = document.querySelector("#visit-form");
+    const visitDate = document.querySelector("#visit-date");
+    const visitStore = document.querySelector("#visit-store");
+    const visitCorners = document.querySelector("#visit-corners");
+    const visitMakers = document.querySelector("#visit-makers");
+    const visitNote = document.querySelector("#visit-note");
+    const visitList = document.querySelector("#visit-list");
+    const yesterdayBtn = document.querySelector("#yesterday");
+    const clearVisitForm = document.querySelector("#clear-visit-form");
+    const sections = [...document.querySelectorAll("section")].filter((section) => section.querySelector(".items"));
+    const dataUpdatedAt = "2026-06-11 12:00";
     const defaultCornerPoints = {
       "ゴルフクラブ": "利益ポイント: ドライバー、フェアウェイウッド、パター、アイアンセット。純正カバー付き、人気シャフト、上位モデルを見る。",
       "スニーカー・靴": "利益ポイント: 限定色、コラボ、USA/UK製、人気サイズ。加水分解、強い臭い、ソール剥がれは避ける。",
@@ -550,6 +674,7 @@
     const KEY_CHECKS = "resale-checks-v1";
     const KEY_MEMOS = "resale-memos-v1";
     const KEY_OPEN = "resale-open-v1";
+    const KEY_VISITS = "resale-visits-v1";
     const loadStore = (key) => {
       try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
     };
@@ -559,6 +684,7 @@
     let checks = loadStore(KEY_CHECKS);
     let memos = loadStore(KEY_MEMOS);
     let openState = loadStore(KEY_OPEN);
+    let visits = Array.isArray(loadStore(KEY_VISITS)) ? loadStore(KEY_VISITS) : [];
 
     // 検索用の正規化: 全角英数→半角、カタカナ→ひらがな、小文字化
     const normalize = (text) => text
@@ -573,6 +699,91 @@
       badge.textContent = `${done}/${boxes.length}`;
       badge.classList.toggle("has", done > 0);
     };
+
+    const formatDate = (date) => {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    };
+    const yesterdayValue = () => {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+      return formatDate(date);
+    };
+    const setYesterday = () => {
+      visitDate.value = yesterdayValue();
+    };
+    const escapeHtml = (text) => text.replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[ch]));
+    const saveVisits = () => {
+      saveStore(KEY_VISITS, visits);
+    };
+    const resetVisitForm = () => {
+      setYesterday();
+      visitStore.value = "";
+      visitCorners.value = "";
+      visitMakers.value = "";
+      visitNote.value = "";
+      visitStore.focus();
+    };
+    const renderVisits = () => {
+      const sorted = [...visits].sort((a, b) => `${b.date || ""}${b.createdAt || ""}`.localeCompare(`${a.date || ""}${a.createdAt || ""}`));
+      if (sorted.length === 0) {
+        visitList.innerHTML = '<p class="empty-visits">まだ巡回履歴がありません</p>';
+        return;
+      }
+      visitList.innerHTML = sorted.map((visit) => `
+        <article class="visit-card">
+          <div class="visit-card-head">
+            <div>
+              <div class="visit-card-title">${escapeHtml(visit.store || "店舗未入力")}</div>
+              <div class="visit-card-date">${escapeHtml(visit.date || "")}</div>
+            </div>
+            <button type="button" class="ghost" data-delete-visit="${visit.id}">削除</button>
+          </div>
+          <div class="visit-lines">
+            ${visit.corners ? `<div><strong>コーナー:</strong> ${escapeHtml(visit.corners)}</div>` : ""}
+            ${visit.makers ? `<div><strong>メーカー:</strong> ${escapeHtml(visit.makers)}</div>` : ""}
+            ${visit.note ? `<div><strong>メモ:</strong> ${escapeHtml(visit.note)}</div>` : ""}
+          </div>
+        </article>
+      `).join("");
+    };
+
+    setYesterday();
+    renderVisits();
+    yesterdayBtn.addEventListener("click", setYesterday);
+    clearVisitForm.addEventListener("click", resetVisitForm);
+    visitForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const visit = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        date: visitDate.value || yesterdayValue(),
+        store: visitStore.value.trim(),
+        corners: visitCorners.value.trim(),
+        makers: visitMakers.value.trim(),
+        note: visitNote.value.trim(),
+        createdAt: new Date().toISOString()
+      };
+      if (!visit.store && !visit.corners && !visit.makers && !visit.note) return;
+      visits.push(visit);
+      saveVisits();
+      renderVisits();
+      resetVisitForm();
+    });
+    visitList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-delete-visit]");
+      if (!button) return;
+      visits = visits.filter((visit) => visit.id !== button.dataset.deleteVisit);
+      saveVisits();
+      renderVisits();
+    });
 
     sections.forEach((section) => {
       const details = section.querySelector("details");
