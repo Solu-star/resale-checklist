@@ -72,6 +72,7 @@
     }
     .toolbar {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
@@ -248,7 +249,7 @@
     }
     .date-row {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       gap: 8px;
     }
     .visit-actions {
@@ -303,6 +304,151 @@
       text-align: center;
       padding: 10px 0 2px;
     }
+    .cal-panel {
+      padding: 12px;
+    }
+    .cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cal-title {
+      font-weight: 900;
+      font-size: 16px;
+    }
+    .cal-nav {
+      display: flex;
+      gap: 6px;
+    }
+    .cal-nav button {
+      padding: 6px 10px;
+    }
+    .cal-summary {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 6px 0 8px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-dow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 0;
+    }
+    .cal-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-height: 54px;
+      padding: 4px 2px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .cal-cell.today {
+      border: 2px solid var(--accent);
+    }
+    .cal-cell.selected {
+      background: var(--profit-bg);
+      border-color: var(--accent);
+    }
+    .cal-day-num {
+      font-size: 13px;
+    }
+    .cal-badge {
+      border-radius: 999px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .cal-badge.visits {
+      background: var(--accent);
+      color: #fff;
+    }
+    .cal-badge.plans {
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .cal-day-detail {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--memo-bg);
+      padding: 10px;
+    }
+    .cal-day-title {
+      margin: 0 0 8px;
+      font-weight: 900;
+      font-size: 15px;
+    }
+    .cal-day-block {
+      margin-bottom: 12px;
+    }
+    .cal-day-block:last-child {
+      margin-bottom: 0;
+    }
+    .cal-day-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .cal-day-empty {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 4px 0;
+    }
+    .plan-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--item-line);
+      font-size: 14px;
+    }
+    .plan-row:last-of-type { border-bottom: 0; }
+    .plan-row button {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .plan-add {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .cal-record-btn {
+      width: 100%;
+      margin-top: 8px;
+    }
+    .to-top {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 3;
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .to-top.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -313,6 +459,7 @@
     <div class="toolbar">
       <span id="updated" class="updated"></span>
       <div class="toolbar-buttons">
+        <button id="toggle-all" type="button" class="ghost">全部閉じる</button>
         <button id="reset" type="button" class="ghost">チェック全消し</button>
         <button id="refresh" type="button">更新</button>
       </div>
@@ -323,6 +470,25 @@
   <main>
     <section>
       <details open>
+        <summary>巡回カレンダー</summary>
+        <div class="cal-panel">
+          <div class="cal-head">
+            <div id="cal-title" class="cal-title"></div>
+            <div class="cal-nav">
+              <button id="cal-prev" type="button" class="ghost">◀</button>
+              <button id="cal-this-month" type="button" class="ghost">今月</button>
+              <button id="cal-next" type="button" class="ghost">▶</button>
+            </div>
+          </div>
+          <p id="cal-summary" class="cal-summary"></p>
+          <div id="cal-grid" class="cal-grid"></div>
+          <div id="cal-day-detail" class="cal-day-detail hidden"></div>
+        </div>
+      </details>
+    </section>
+
+    <section>
+      <details open>
         <summary>巡回履歴</summary>
         <div class="visit-panel">
           <form id="visit-form" class="visit-form">
@@ -331,6 +497,7 @@
               <div class="date-row">
                 <input id="visit-date" type="date">
                 <button id="yesterday" type="button" class="ghost">昨日</button>
+                <button id="today" type="button" class="ghost">今日</button>
               </div>
             </label>
             <label class="visit-field">
@@ -626,6 +793,8 @@
     <p id="no-hit" class="no-hit hidden">該当するブランドが見つかりません</p>
   </main>
 
+  <button id="to-top" type="button" class="to-top">↑ 上へ</button>
+
   <script>
     const search = document.querySelector("#search");
     const refresh = document.querySelector("#refresh");
@@ -642,9 +811,19 @@
     const visitNote = document.querySelector("#visit-note");
     const visitList = document.querySelector("#visit-list");
     const yesterdayBtn = document.querySelector("#yesterday");
+    const todayBtn = document.querySelector("#today");
     const clearVisitForm = document.querySelector("#clear-visit-form");
+    const toggleAllBtn = document.querySelector("#toggle-all");
+    const toTopBtn = document.querySelector("#to-top");
+    const calTitle = document.querySelector("#cal-title");
+    const calSummary = document.querySelector("#cal-summary");
+    const calGrid = document.querySelector("#cal-grid");
+    const calDetail = document.querySelector("#cal-day-detail");
+    const calPrev = document.querySelector("#cal-prev");
+    const calNext = document.querySelector("#cal-next");
+    const calThisMonth = document.querySelector("#cal-this-month");
     const sections = [...document.querySelectorAll("section")].filter((section) => section.querySelector(".items"));
-    const dataUpdatedAt = "2026-06-11 12:00";
+    const dataUpdatedAt = "2026-06-11 22:00";
     const defaultCornerPoints = {
       "ゴルフクラブ": "利益ポイント: ドライバー、フェアウェイウッド、パター、アイアンセット。純正カバー付き、人気シャフト、上位モデルを見る。",
       "スニーカー・靴": "利益ポイント: 限定色、コラボ、USA/UK製、人気サイズ。加水分解、強い臭い、ソール剥がれは避ける。",
@@ -675,6 +854,7 @@
     const KEY_MEMOS = "resale-memos-v1";
     const KEY_OPEN = "resale-open-v1";
     const KEY_VISITS = "resale-visits-v1";
+    const KEY_PLANS = "resale-plans-v1";
     const loadStore = (key) => {
       try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
     };
@@ -685,6 +865,7 @@
     let memos = loadStore(KEY_MEMOS);
     let openState = loadStore(KEY_OPEN);
     let visits = Array.isArray(loadStore(KEY_VISITS)) ? loadStore(KEY_VISITS) : [];
+    let plans = Array.isArray(loadStore(KEY_PLANS)) ? loadStore(KEY_PLANS) : [];
 
     // 検索用の正規化: 全角英数→半角、カタカナ→ひらがな、小文字化
     const normalize = (text) => text
@@ -706,6 +887,12 @@
       const d = String(date.getDate()).padStart(2, "0");
       return `${y}-${m}-${d}`;
     };
+    const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+    const formatDateLabel = (dateStr) => {
+      const [y, m, d] = (dateStr || "").split("-").map(Number);
+      if (!y || !m || !d) return dateStr || "";
+      return `${y}/${m}/${d}(${WEEKDAYS[new Date(y, m - 1, d).getDay()]})`;
+    };
     const yesterdayValue = () => {
       const date = new Date();
       date.setDate(date.getDate() - 1);
@@ -724,6 +911,136 @@
     const saveVisits = () => {
       saveStore(KEY_VISITS, visits);
     };
+    const savePlans = () => {
+      saveStore(KEY_PLANS, plans);
+    };
+
+    // ----- 巡回カレンダー(月表示) -----
+    const calCursor = new Date();
+    calCursor.setDate(1);
+    let selectedDate = null;
+
+    const groupByDate = (list) => {
+      const map = {};
+      list.forEach((item) => {
+        if (!item.date) return;
+        (map[item.date] = map[item.date] || []).push(item);
+      });
+      return map;
+    };
+
+    const renderDayDetail = () => {
+      if (!selectedDate) {
+        calDetail.classList.add("hidden");
+        calDetail.innerHTML = "";
+        return;
+      }
+      const dayPlans = plans.filter((p) => p.date === selectedDate);
+      const dayVisits = visits.filter((v) => v.date === selectedDate);
+      calDetail.classList.remove("hidden");
+      calDetail.innerHTML = `
+        <p class="cal-day-title">${escapeHtml(formatDateLabel(selectedDate))}</p>
+        <div class="cal-day-block">
+          <div class="cal-day-label">巡回予定</div>
+          ${dayPlans.length ? dayPlans.map((p) => `
+            <div class="plan-row"><span>${escapeHtml(p.store)}</span><button type="button" class="ghost" data-delete-plan="${p.id}">削除</button></div>
+          `).join("") : '<p class="cal-day-empty">予定はまだありません</p>'}
+          <form class="plan-add" data-plan-form>
+            <input type="text" data-plan-input placeholder="例: ハードオフ 〇〇店">
+            <button type="submit">予定を追加</button>
+          </form>
+        </div>
+        <div class="cal-day-block">
+          <div class="cal-day-label">巡回実績: ${dayVisits.length}店舗</div>
+          ${dayVisits.length ? dayVisits.map((v) => `
+            <div class="plan-row"><span>${escapeHtml(v.store || "店舗未入力")}</span></div>
+          `).join("") : '<p class="cal-day-empty">記録はまだありません</p>'}
+          <button type="button" class="ghost cal-record-btn" data-record-visit>この日付で巡回を記録する</button>
+        </div>
+      `;
+    };
+
+    const renderCalendar = () => {
+      const y = calCursor.getFullYear();
+      const m = calCursor.getMonth();
+      calTitle.textContent = `${y}年${m + 1}月`;
+      const prefix = `${y}-${String(m + 1).padStart(2, "0")}-`;
+      const visitMap = groupByDate(visits);
+      const planMap = groupByDate(plans);
+      const monthVisits = visits.filter((v) => (v.date || "").startsWith(prefix));
+      const visitDays = new Set(monthVisits.map((v) => v.date)).size;
+      const monthPlans = plans.filter((p) => (p.date || "").startsWith(prefix));
+      calSummary.textContent = `この月の実績: ${monthVisits.length}店舗 / ${visitDays}日 ・ 予定 ${monthPlans.length}件`;
+
+      const firstDow = new Date(y, m, 1).getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      const todayStr = formatDate(new Date());
+      let html = WEEKDAYS.map((w) => `<div class="cal-dow">${w}</div>`).join("");
+      for (let i = 0; i < firstDow; i++) html += "<div></div>";
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${prefix}${String(d).padStart(2, "0")}`;
+        const visitCount = (visitMap[dateStr] || []).length;
+        const planCount = (planMap[dateStr] || []).length;
+        const cls = ["cal-cell"];
+        if (dateStr === todayStr) cls.push("today");
+        if (dateStr === selectedDate) cls.push("selected");
+        html += `<button type="button" class="${cls.join(" ")}" data-cal-date="${dateStr}">
+          <span class="cal-day-num">${d}</span>
+          ${visitCount ? `<span class="cal-badge visits">${visitCount}店</span>` : ""}
+          ${planCount ? `<span class="cal-badge plans">予${planCount}</span>` : ""}
+        </button>`;
+      }
+      calGrid.innerHTML = html;
+      renderDayDetail();
+    };
+
+    calPrev.addEventListener("click", () => {
+      calCursor.setMonth(calCursor.getMonth() - 1);
+      renderCalendar();
+    });
+    calNext.addEventListener("click", () => {
+      calCursor.setMonth(calCursor.getMonth() + 1);
+      renderCalendar();
+    });
+    calThisMonth.addEventListener("click", () => {
+      const now = new Date();
+      calCursor.setFullYear(now.getFullYear(), now.getMonth(), 1);
+      selectedDate = formatDate(now);
+      renderCalendar();
+    });
+    calGrid.addEventListener("click", (event) => {
+      const cell = event.target.closest("[data-cal-date]");
+      if (!cell) return;
+      selectedDate = selectedDate === cell.dataset.calDate ? null : cell.dataset.calDate;
+      renderCalendar();
+    });
+    calDetail.addEventListener("click", (event) => {
+      const del = event.target.closest("[data-delete-plan]");
+      if (del) {
+        plans = plans.filter((p) => p.id !== del.dataset.deletePlan);
+        savePlans();
+        renderCalendar();
+        return;
+      }
+      if (event.target.closest("[data-record-visit]")) {
+        visitDate.value = selectedDate;
+        const visitDetails = visitForm.closest("details");
+        visitDetails.open = true;
+        const top = visitDetails.getBoundingClientRect().top + window.scrollY - headerEl.offsetHeight - 8;
+        window.scrollTo({ top, behavior: "smooth" });
+        visitStore.focus();
+      }
+    });
+    calDetail.addEventListener("submit", (event) => {
+      const form = event.target.closest("[data-plan-form]");
+      if (!form) return;
+      event.preventDefault();
+      const store = form.querySelector("[data-plan-input]").value.trim();
+      if (!store || !selectedDate) return;
+      plans.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, date: selectedDate, store });
+      savePlans();
+      renderCalendar();
+    });
     const resetVisitForm = () => {
       setYesterday();
       visitStore.value = "";
@@ -743,7 +1060,7 @@
           <div class="visit-card-head">
             <div>
               <div class="visit-card-title">${escapeHtml(visit.store || "店舗未入力")}</div>
-              <div class="visit-card-date">${escapeHtml(visit.date || "")}</div>
+              <div class="visit-card-date">${escapeHtml(formatDateLabel(visit.date))}</div>
             </div>
             <button type="button" class="ghost" data-delete-visit="${visit.id}">削除</button>
           </div>
@@ -758,7 +1075,11 @@
 
     setYesterday();
     renderVisits();
+    renderCalendar();
     yesterdayBtn.addEventListener("click", setYesterday);
+    todayBtn.addEventListener("click", () => {
+      visitDate.value = formatDate(new Date());
+    });
     clearVisitForm.addEventListener("click", resetVisitForm);
     visitForm.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -775,6 +1096,7 @@
       visits.push(visit);
       saveVisits();
       renderVisits();
+      renderCalendar();
       resetVisitForm();
     });
     visitList.addEventListener("click", (event) => {
@@ -783,6 +1105,7 @@
       visits = visits.filter((visit) => visit.id !== button.dataset.deleteVisit);
       saveVisits();
       renderVisits();
+      renderCalendar();
     });
 
     sections.forEach((section) => {
@@ -859,6 +1182,26 @@
       const url = new URL(location.href);
       url.searchParams.set("v", Date.now().toString());
       location.href = url.toString();
+    });
+
+    // コーナーをまとめて閉じる/開く
+    toggleAllBtn.addEventListener("click", () => {
+      const anyOpen = sections.some((s) => s.querySelector("details").open);
+      sections.forEach((s) => {
+        const details = s.querySelector("details");
+        details.open = !anyOpen;
+        openState[s.dataset.title] = details.open;
+      });
+      saveStore(KEY_OPEN, openState);
+      toggleAllBtn.textContent = anyOpen ? "全部開く" : "全部閉じる";
+    });
+
+    // ページ上部へ戻るボタン
+    window.addEventListener("scroll", () => {
+      toTopBtn.classList.toggle("show", window.scrollY > 400);
+    }, { passive: true });
+    toTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
     resetBtn.addEventListener("click", () => {
